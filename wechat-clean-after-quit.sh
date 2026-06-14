@@ -65,7 +65,7 @@ human_size() {
 }
 
 wechat_running() {
-  pgrep -x WeChat >/dev/null 2>&1 || pgrep -x WeChatAppEx >/dev/null 2>&1
+  pgrep -x WeChat >/dev/null 2>&1
 }
 
 clean_once() {
@@ -80,15 +80,15 @@ clean_once() {
   fi
 
   local targets=()
-  [[ -d "$XFILES/WMPF" ]] && targets+=("$XFILES/WMPF")
-
   local account subdir target
-  for account in "$XFILES"/wxid_*; do
+  while IFS= read -r account; do
     [[ -d "$account" ]] || continue
     for subdir in msg db_storage/message db_storage/session temp cache; do
       [[ -d "$account/$subdir" ]] && targets+=("$account/$subdir")
     done
-  done
+  done < <(/usr/bin/find "$XFILES" -maxdepth 1 -type d -name 'wxid_*' -print 2>/dev/null)
+
+  [[ -d "$XFILES/WMPF" ]] && targets+=("$XFILES/WMPF")
 
   if [[ "${#targets[@]}" -eq 0 ]]; then
     log "No local chat-record folders found."
@@ -112,12 +112,23 @@ clean_once() {
     [[ "$answer" == "CLEAN" ]] || { log "Cancelled."; return 0; }
   fi
 
+  local failed=0
   for target in "${targets[@]}"; do
     log "Deleting: $target"
-    /bin/rm -rf "$target"
+    /bin/chmod -R u+rwX "$target" >/dev/null 2>&1 || true
+    /usr/bin/xattr -dr com.apple.quarantine "$target" >/dev/null 2>&1 || true
+    if ! error=$(/bin/rm -rf "$target" 2>&1); then
+      failed=1
+      log "Failed to delete: $target"
+      log "  $error"
+    fi
   done
 
-  log "Done. Deleted scoped local WeChat chat records."
+  if [[ "$failed" -eq 0 ]]; then
+    log "Done. Deleted scoped local WeChat chat records."
+  else
+    log "Done with errors. Some scoped local WeChat chat records could not be deleted."
+  fi
 }
 
 watch_loop() {

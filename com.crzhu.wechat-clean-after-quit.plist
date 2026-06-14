@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>KeepAlive</key>
+	<true/>
+	<key>Label</key>
+	<string>com.crzhu.wechat-clean-after-quit</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/crzhu/Library/wechat-clean-after-quit/WeChatCleanAfterQuit.app/Contents/MacOS/WeChatCleanAfterQuit</string>
+		<string>--watch</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardErrorPath</key>
+	<string>/Users/crzhu/Library/Logs/wechat-clean-after-quit.launchd.err.log</string>
+	<key>StandardOutPath</key>
+	<string>/Users/crzhu/Library/Logs/wechat-clean-after-quit.launchd.out.log</string>
+</dict>
+</plist>
