@@ -237,7 +237,10 @@ static int clean_once(bool dry_run) {
 
 static void watch_loop(void) {
   log_line("native watcher started");
-  bool was_running = false;
+  bool was_running = wechat_running();
+  if (!was_running) {
+    clean_once(false);
+  }
 
   while (true) {
     if (wechat_running()) {

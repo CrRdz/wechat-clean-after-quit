@@ -136,6 +136,12 @@ watch_loop() {
   log "watcher started"
 
   local was_running=0
+  if wechat_running; then
+    was_running=1
+  else
+    YES=1 clean_once || true
+  fi
+
   while true; do
     if wechat_running; then
       was_running=1
